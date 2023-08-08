@@ -57,7 +57,7 @@ function getAllBooks(): readonly Book[] {
   return books;
 }
 
-function logFirstAvailable(books: readonly Book[]): void {
+function logFirstAvailable(books: readonly Book[] = getAllBooks()): void {
   const numberOfBooks = books.length;
   const title = books.find(book => book.available)?.title;
 
@@ -115,3 +115,83 @@ console.groupEnd();
 console.log('Total page number for all libraries', calcTotalPages());
 
 console.groupEnd();
+
+// const myID: string =
+function getID(name: string, key: number): string {
+  return `${name}_${key}`;
+}
+
+type GetID = typeof getID;
+
+function createCustomer(name: string, age?: number, city?: string) {
+  console.groupCollapsed('Create customer');
+  console.log('Customer name:', name);
+  if (age) console.log('Age:', age);
+  if (city) console.log('City:', city);
+  console.groupEnd();
+}
+
+function getBookByID(id: number): Book | undefined {
+  const books = getAllBooks();
+  return books.find(({ id: bookID })=> bookID === id );
+}
+
+function checkoutBiiks(customer: string, ...bookIDs: number[]): string[] {
+  console.log('Customer name:', customer);
+
+  return bookIDs
+    .map(id => getBookByID(id))
+    .filter(book => book?.available)
+    .map(book => book!.title);
+}
+
+console.groupCollapsed('Task 3.02');
+createCustomer('Anna');
+createCustomer('Anna', 18);
+createCustomer('Anna', 18, 'Vilnius');
+
+getBookByID(1);
+
+console.groupEnd();
+
+console.groupCollapsed('Task 3.');
+/* eslint-disable no-redeclare */
+function getTitles(author: string): string [];
+function getTitles(available: boolean): string [];
+function getTitles(id: number, available: boolean): string [];
+function getTitles(...args: [string| boolean] | [number, boolean]): string [] {
+  const books = getAllBooks();
+  
+  if (args.length === 2) {
+    const [id, available] = args;
+    return books
+      .filter(book => book.available && book.id === id)
+      .map(({ title }) => title);
+  }
+
+  const [arg] = args;
+  if (typeof arg === 'string') {
+    return books
+      .filter(book => book.author === arg)
+      .map(({ title }) => title);
+  }
+  
+  return books
+    .filter(({ available }) => available)
+    .map(({ title }) => title);
+};
+getTitles(1, true);
+console.groupEnd();
+
+function assertString(value: unknown): asserts value is string {
+  if (typeof value !== 'string')
+    throw new TypeError('Value should be a string');
+}
+
+function transformBookTitle(title: unknown) {
+  assertString(title);
+
+  return [...title].reverse().join('');
+}
+console.log(transformBookTitle('TypeScript'));
+console.log(transformBookTitle(123));
